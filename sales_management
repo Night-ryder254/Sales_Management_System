@@ -1,0 +1,98 @@
+-- Create database
+CREATE DATABASE IF NOT EXISTS sales_management;
+USE sales_management;
+
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    role ENUM('admin', 'sales_rep') NOT NULL DEFAULT 'sales_rep',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create customers table
+CREATE TABLE IF NOT EXISTS customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20),
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Create product categories table
+CREATE TABLE IF NOT EXISTS product_categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(50) NOT NULL,
+    description TEXT
+);
+
+-- Create products table
+CREATE TABLE IF NOT EXISTS products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    category_id INT,
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    stock_quantity INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES product_categories(category_id) ON DELETE SET NULL
+);
+
+-- Create sales table
+CREATE TABLE IF NOT EXISTS sales (
+    sale_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    customer_id INT NOT NULL,
+    sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    payment_method ENUM('cash', 'credit_card', 'bank_transfer') NOT NULL,
+    notes TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
+-- Create sale_items table
+CREATE TABLE IF NOT EXISTS sale_items (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    sale_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL,
+    subtotal DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (sale_id) REFERENCES sales(sale_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
+);
+
+-- Insert default admin user (password: admin123)
+INSERT INTO users (username, password, full_name, email, role) VALUES 
+('admin', '$2y$10$8IbQjVCZXNKXRj/yuY9XCe9UoX4XO/bE5oOoTLzAf.NbMwk11IeQu', 'System Admin', 'admin@example.com', 'admin');
+
+-- Insert sample product categories
+INSERT INTO product_categories (category_name, description) VALUES
+('Electronics', 'Electronic devices and accessories'),
+('Clothing', 'Apparel and fashion items'),
+('Home & Kitchen', 'Household products and kitchen utilities'),
+('Office Supplies', 'Office stationery and equipment');
+
+-- Insert sample products
+INSERT INTO products (product_name, category_id, description, price, stock_quantity) VALUES
+('Laptop', 1, 'High-performance laptop with 16GB RAM', 899.99, 25),
+('Smartphone', 1, 'Latest model with 128GB storage', 699.99, 50),
+('T-shirt', 2, 'Cotton T-shirt, available in multiple colors', 19.99, 100),
+('Coffee Maker', 3, 'Programmable coffee maker with timer', 49.99, 30),
+('Notebook Set', 4, 'Pack of 5 professional notebooks', 14.99, 200),
+('Wireless Mouse', 1, 'Ergonomic wireless mouse', 24.99, 45),
+('Desk Lamp', 4, 'Adjustable LED desk lamp', 29.99, 35);
+
+-- Insert sample customers
+INSERT INTO customers (first_name, last_name, email, phone, address) VALUES
+('Bradley', 'Shikoli', 'bradleyshikoli@gmail.com', '254-723-456-067', '123 Ojijo, Ojijo Road, KENYA'),
+('Nigel', 'Matekwa', 'nigelmatekwa@gmail.com', '254-787-198-195', '456 Oak Ave, Westlands, KENYA'),
+('Robert', 'Johnson', 'robertj@gmail.com', '254-767-890-981', '789 Thika Rd, Thika, KENYA');
