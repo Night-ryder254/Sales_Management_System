@@ -402,7 +402,7 @@ if ($result->num_rows > 0) {
 
     <footer>
         <div class="container">
-            <p>&copy; <?php echo date('Y'); ?> Sales Management System</p>
+            <p>&copy;Sales Management System</p>
         </div>
     </footer>
 

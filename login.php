@@ -116,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Sales Management System</p>
+            <p>&copy;Sales Management System</p>
         </div>
     </footer>
 </body>
